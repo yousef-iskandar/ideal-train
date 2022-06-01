@@ -13,7 +13,12 @@
         "ReplicatedStorage": {
             "$className": "ReplicatedStorage",
             "$path": "src/ReplicatedStorage",
-            "$ignoreUnknownInstances": true
+            "$ignoreUnknownInstances": true,
+            "WallyPackages":{
+                "$className": "Folder",
+                "$path": "Packages",
+                "$ignoreUnknownInstances": false
+            }
         },
 
         "ServerScriptService": {
