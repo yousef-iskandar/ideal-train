@@ -1,15 +1,14 @@
----Watchdog Service Manager.
+-- Watchdog Service Manager.
 -- This script exists solely to aggregate and act upon any watchdog errors.
 -- Serving to be a clean way to trigger the watchdog incase a violation has occured.
--- @class WatchdogService
--- @author yousef
+---@class WatchdogService
 local Watchdog = {}
 
----Trigger Watchdog. 
+-- Trigger Watchdog. 
 -- Kick the player immediately for a watchdog error.
--- @param player the player to kick
--- @param err the error that occured
--- @return nil
+---@param player Player the player to kick
+---@param err string the error that occured
+---@return nil #nil
 function Watchdog.Trigger(player,err)
     local callingScript = debug.info(2,"s")
     print(player.UserId 

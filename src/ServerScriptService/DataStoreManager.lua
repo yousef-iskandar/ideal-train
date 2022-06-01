@@ -1,10 +1,9 @@
----Module providing management for the DataStoreService.
+-- Module providing management for the DataStoreService.
 -- be VERY careful what you muck about in here.
 -- you risk mangling user data if you don't do stuff correctly.
 -- if you dont know what you're doing, or arent COMPLETELY CERTAIN about it,
 -- DONT do it and ask yousef first.
--- @class DataStoreManager
--- @author yousef
+---@class DataStoreManager
 local DataStoreManager = {}
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -13,8 +12,8 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local HttpService = game:GetService("HttpService")
 
-local Utilities = require(ReplicatedFirst.Utilities)
-local WatchdogService = require(ServerScriptService.WatchdogService)
+local Utilities = require(ReplicatedFirst:WaitForChild("Utilities"))
+local WatchdogService = require(ServerScriptService:WaitForChild("WatchdogService"))
 
 local clientPlayerStore = DataStoreService:GetDataStore("ClientPlayerStore")
 local clientPlayerDataCache = {}
@@ -42,10 +41,10 @@ local serverPlayerDataTypeLayout = {
 	oldestCompatibleVersion = "number",
 }
 
---- Query Client Player Data.
+-- Query Client Player Data.
 -- Gets the client data of a player from the cache, retrieving it from the Datastore if necessary.
--- @params player the player to get the data for
--- @return the client data of the player
+---@param player Player the player to get the data for
+---@return table data the client data of the player
 local function queryClientPlayerData(player)
 	if clientPlayerDataCache[player.UserId] then
 		return clientPlayerDataCache[player.UserId]
@@ -82,12 +81,12 @@ local function queryClientPlayerData(player)
 	return clientPlayerData
 end
 
---- Query Server Player Data.
+-- Query Server Player Data.
 -- Gets the server data of a player from the cache, retrieving it from the Datastore if necessary.
 -- Under no circumstances should this data ever be directly exposed to a player.
 -- If you need to expose this data to a player, you should use the client data store instead.
--- @params player the player to get the data for
--- @return the client data of the player
+---@param player Player the player to get the data for
+---@return table data the client data of the player
 local function queryServerPlayerData(player)
 	if serverPlayerDataCache[player.UserId] then
 		return serverPlayerDataCache[player.UserId]
@@ -124,13 +123,13 @@ local function queryServerPlayerData(player)
 	return serverPlayerData
 end
 
---- Set Client Player Data.
+-- Set Client Player Data.
 -- Totally overwrites the client data of a player in the cache, and the Datastore.
 -- Will verify type integrity of the data before updating.
 -- Using this function is a very bad idea. Ensure you know what you're doing before using it.
--- @params player to update for
--- @params data the data to update with
--- @return boolean indicating whether the update was successful
+---@param player Player the player to update for
+---@param data table the data to update with
+---@return boolean success bool indicating whether the update was successful
 local function setClientPlayerData(player, data)
 	for k, v in pairs(data) do
 		--verify this key exists in the template
@@ -150,13 +149,13 @@ local function setClientPlayerData(player, data)
 	return true
 end
 
---- Set Server Player Data.
+-- Set Server Player Data.
 -- Totally overwrites the server data of a player in the cache, and the Datastore.
 -- Will verify type integrity of the data before updating.
 -- Using this function is a very bad idea. Ensure you know what you're doing before using it.
--- @params player to update for
--- @params data the data to update with
--- @return boolean indicating whether the update was successful
+---@param player Player the player to update for
+---@param data table the data to update with
+---@return boolean success bool indicating whether the update was successful
 local function setServerPlayerData(player, data)
 	for k, v in pairs(data) do
 		--verify this key exists in the template
@@ -176,12 +175,12 @@ local function setServerPlayerData(player, data)
 	return true
 end
 
---- Update Client Player Data.
+-- Update Client Player Data.
 -- Updates the client data of a player in the cache, and the Datastore.
 -- Will verify type integrity of the data before updating.
--- @params player the player to update for
--- @params data the data to update with
--- @return boolean indicating whether the update was successful
+---@param player Player the player to update for
+---@param delta table the data to update with
+---@return boolean success bool indicating whether the update was successful
 local function updateClientPlayerData(player, delta)
 	local clientPlayerData = queryClientPlayerData(player)
 	if not clientPlayerData then
@@ -197,12 +196,12 @@ local function updateClientPlayerData(player, delta)
 	return setClientPlayerData(player, fullPackage)
 end
 
---- Update Server Player Data
+-- Update Server Player Data
 -- Updates the server data of a player in the cache, and the Datastore.
 -- Will verify type integrity of the data before updating.
--- @params player the player to update for
--- @params data the data to update with
--- @return boolean indicating whether the update was successful
+---@param player Player the player to update for
+---@param delta table the data to update with
+---@return boolean success bool indicating whether the update was successful
 local function updateServerPlayerData(player, delta)
 	local serverPlayerData = queryServerPlayerData(player)
 	if not serverPlayerData then
