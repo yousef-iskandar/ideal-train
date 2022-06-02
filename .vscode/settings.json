@@ -1,0 +1,8 @@
+{
+    "robloxLsp.diagnostics.enable": false,
+    "robloxLsp.hint.enable": true,
+    "robloxLsp.hint.paramName": true,
+    "robloxLsp.hint.returnType": true,
+    "robloxLsp.hint.setType": true,
+    "robloxLsp.typeChecking.mode": "Strict"
+}
