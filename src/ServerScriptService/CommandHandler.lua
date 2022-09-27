@@ -1,7 +1,6 @@
 --!strict
 ---Serverside chat commands handler system.
 ---Don't modify this directly, If you need to register a command create a module under ServerScriptService/ChatCommands
----@diagnostic disable-next-line: duplicate-doc-class ## I have no idea why lsp thinks this is a duplicate
 ---@class CommandHandler
 ---@field CommandsMap table
 ---@field Commands table
@@ -21,12 +20,14 @@ local Command = require(ServerScriptService.ChatCommands.Command)
 
 function CommandHandler.Run(ChatService)
 	local children: Array<ModuleScript> = ServerScriptService:WaitForChild("ChatCommands"):GetChildren()
-	print("Loading " .. #children .. " commands.")
 	-- Require all chat command modules
 	for i = 1, #children do
 		local child: ModuleScript = children[i]
 		if child:IsA("ModuleScript") then
 			local command: Command.Command = require(child)
+            if #command.Names == 0 then
+                continue -- so we ignore the abstract command class (which doesnt define command name)
+            end
 			CommandHandler.Commands[#CommandHandler.Commands + 1] = command
 
 			--Insert commands into the command map by *all* aliases
@@ -44,11 +45,13 @@ function CommandHandler.Run(ChatService)
 			commandName = string.sub(commandName, 2)
 			local command: Command.Command = CommandHandler.CommandsMap[commandName]
 
-			if not command == nil then
-				command.Execute(speaker, message, channel, ChatService)
+			if command == nil then
+				ChatService
+					:GetSpeaker(speaker)
+					:SendSystemMessage("[SYSTEM] Command not found: " .. commandName, channel)
 				return true
 			else
-				ChatService:GetSpeaker(speaker):SendSystemMessage("Command not found: " .. commandName)
+				command.Execute(speaker, message, channel, ChatService)
 				return true
 			end
 		end
